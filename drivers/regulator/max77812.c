@@ -2650,7 +2650,14 @@ static __always_inline int max77812_interrupt_config (struct max77812 *max77812,
         irq_set_chip_and_handler(sub_irq,
             &max77812_irq_chip, handle_simple_irq);
         irq_set_nested_thread(sub_irq, true);
+#ifdef CONFIG_ARM
+	/* ARM needs us to explicitly flag the IRQ as VALID,
+	 * once we do so, it will also set the noprobe,
+	 */
+	set_irq_flags(sub_irq, IRQF_VALID);
+#else /* CONFIG_ARM */	
         irq_set_noprobe(sub_irq);
+#endif /* CONFIG_ARM */	
     }
 
     /* all done successfully */
