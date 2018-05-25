@@ -1,0 +1,564 @@
+/*
+ * Copyright (C) 2015 Maxim Integrated
+ *
+ * This file is part of MAX77696 PMIC Linux Driver
+ *
+ * MAX77696 PMIC Linux Driver is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or (at your
+ * option) any later version.
+ *
+ * MAX77696 PMIC Linux Driver is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+ * Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * MAX77696 PMIC Linux Driver. If not, see http://www.gnu.org/licenses/.
+ */
+
+/*#include <dt-bindings/gpio/gpio.h>*/
+/*#include <dt-bindings/interrupt-controller/arm-gic.h>*/
+
+/ {
+	maxim_miniq_gpio {
+		gpiocfg0 {
+			reg = <0>; /* GPIO_K1 */
+			cfg = <0>; /* 0=IN, 2=OUT_LO, 3=OUT_HI */
+		};
+	};
+
+	max77796 {
+		compatible = "maxim,max77796";
+		status = "okay";
+		#address-cells = <0>;
+		#size-cells = <0>;
+
+		intb_gpio = <&maxim_miniq_gpio 0/*GPIO_K1*/ 1/*GPIO_ACTIVE_LOW*/>;
+		/*i2c_busnum = <0>;*/ /* comment out for non-static i2c-adapter */
+
+/*******************************************************************************
+ * Top Interrupts
+ ******************************************************************************/
+
+		topint_irq_trigger	= <2>; /* IRQ_TYPE_EDGE_FALLING */
+		topint_irq_base		= <0>;
+
+/*******************************************************************************
+ * Top System Management
+ ******************************************************************************/
+
+		topsys_irq_base		= <0>;
+
+/*******************************************************************************
+ * GPIOs
+ ******************************************************************************/
+
+		max77796_gpio {
+			compatible = "maxim,max77796-gpio";
+			status = "okay";
+			gpio-controller;
+			#gpio-cells = <2>;
+			interrupt-controller;
+			#interrupt-cells = <2>;
+
+			gpio_base = <0>;
+			irq_base = <0>;
+
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			/***
+			// Number of GPIOs
+			#define MAX77696_NUM_OF_GPIOS               5
+
+			// GPIO alternate mode
+			#define MAX77696_GPIO_MODE_STDGPIO          0b00
+			#define MAX77696_GPIO_MODE_0                0b01
+			#define MAX77696_GPIO_MODE_1                0b10
+			#define MAX77696_GPIO_MODE_2                0b11
+
+			// GPIO direction
+			#define MAX77696_GPIO_DIR_OUTPUT            0
+			#define MAX77696_GPIO_DIR_INPUT             1
+
+			// GPIO output drive configuration
+			#define MAX77696_GPIO_DRIVE_OPENDRAIN       0
+			#define MAX77696_GPIO_DRIVE_PUSHPULL        1
+
+			// GPIO output level configuration
+			#define MAX77696_GPIO_LEVEL_LOW             0
+			#define MAX77696_GPIO_LEVEL_HIGH            1
+
+			// GPIO input debounce configuration
+			#define MAX77696_GPIO_DBNC_0_MSEC           0b00
+			#define MAX77696_GPIO_DBNC_8_MSEC           0b01
+			#define MAX77696_GPIO_DBNC_16_MSEC          0b10
+			#define MAX77696_GPIO_DBNC_32_MSEC          0b11
+
+			// GPIO input interrupt configuration
+			#define MAX77696_GPIO_INTCNFG_DISABLE       0b00
+			#define MAX77696_GPIO_INTCNFG_FALLING_EDGE  0b01
+			#define MAX77696_GPIO_INTCNFG_RISING_EDGE   0b10
+
+			gpio0_cfg@0 {
+				reg = <0>;
+				alter_mode = <MAX77696_GPIO_MODE>;
+				pullup_en;
+				pulldn_en;
+				direction = <MAX77696_GPIO_DIR_INPUT>;
+				dbnc = <MAX77696_GPIO_DBNC>;
+				intcnfg = <MAX77696_GPIO_INTCNFG>;
+			};
+
+			gpio0_cfg@0 {
+				reg = <0>;
+				alter_mode = <MAX77696_GPIO_MODE>;
+				pullup_en;
+				pulldn_en;
+				direction = <MAX77696_GPIO_DIR_OUTPUT>;
+				drive = <MAX77696_GPIO_DRIVE>;
+				level = <MAX77696_GPIO_LEVEL>;
+			};
+			***/
+		};
+
+/*******************************************************************************
+ * 32KHz Clock Buffer
+ ******************************************************************************/
+
+		max77796_clk {
+			compatible = "maxim,max77796-clk";
+			status = "okay";
+
+			load_cap = <0>; /* MAX77696_CLK_LOAD_CAP_22PF */
+			op_mode = <0>; /* MAX77696_CLK_OPMODE_LOW_POWER */
+		};
+
+/*******************************************************************************
+ * Watchdog Timer
+ ******************************************************************************/
+
+		max77796_wdt {
+			compatible = "maxim,max77796-wdt";
+			status = "okay";
+
+			timeout_sec = <128>;
+			ping_interval_sec = <60>;
+		};
+
+/*******************************************************************************
+ * ADC
+ ******************************************************************************/
+
+		max77796_adc {
+			compatible = "maxim,max77796-adc";
+			status = "okay";
+
+			/***
+			#define MAX77696_ADC_PRINT_RAW    0b00000001 // integer
+			#define MAX77696_ADC_PRINT_SCALED 0b00000010 // integer (milli-scaled)
+			#define MAX77696_ADC_PRINT_FULL   0b00000100 // double + unit string
+			***/
+
+			print_fmt = <0x04>;
+			/*vref_name = "";*/
+		};
+
+/*******************************************************************************
+ * BUCK Regulators
+ ******************************************************************************/
+
+		max77796_buck {
+			compatible = "maxim,max77796-bucks";
+			status = "okay";
+
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			buck1@0 {
+				reg = <0>;
+				regulator-name = "MAX77796-BUCK1";
+				regulator-min-microvolt = <600000>;
+				regulator-max-microvolt = <3387500>;
+				regulator-always-on;
+				rsr = <1>; /* MAX77696_BUCK_RSR_25000 */
+				fsr_en;
+				dvs_uV = <1000000>; /* 1.000V (default) */
+			};
+
+			buck2@1 {
+				reg = <1>;
+				regulator-name = "MAX77796-BUCK2";
+				regulator-min-microvolt = <600000>;
+				regulator-max-microvolt = <3387500>;
+				regulator-always-on;
+				rsr = <1>; /* MAX77696_BUCK_RSR_25000 */
+				fsr_en;
+				dvs_uV = <1000000>; /* 1.000V (default) */
+			};
+
+			buck3@2 {
+				reg = <2>;
+				regulator-name = "MAX77796-BUCK3";
+				regulator-min-microvolt = <600000>;
+				regulator-max-microvolt = <3387500>;
+				regulator-always-on;
+				rsr = <1>; /* MAX77696_BUCK_RSR_25000 */
+				fsr_en;
+				dvs_uV = <0>; /* not supported */
+			};
+
+			buck4@3 {
+				reg = <3>;
+				regulator-name = "MAX77796-BUCK4";
+				regulator-min-microvolt = <600000>;
+				regulator-max-microvolt = <3387500>;
+				regulator-always-on;
+				rsr = <1>; /* MAX77696_BUCK_RSR_25000 */
+				fsr_en;
+				dvs_uV = <0>; /* not supported */
+			};
+		};
+
+/*******************************************************************************
+ * BUCK Boost Regulators
+ ******************************************************************************/
+
+		max77796_bbst {
+			compatible = "maxim,max77796-bbsts";
+			status = "okay";
+
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			bbst1@0 {
+				reg = <0>;
+				regulator-name = "MAX77796-BBST1";
+				regulator-min-microvolt = <2600000>;
+				regulator-max-microvolt = <4187500>;
+				regulator-always-on;
+			};
+		};
+
+/*******************************************************************************
+ * LDO Regulators
+ ******************************************************************************/
+
+		max77796_ldo {
+			compatible = "maxim,max77796-ldos";
+			status = "okay";
+
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			ldo1@0 {
+				reg = <0>;
+				regulator-name = "MAX77796-LDO1";
+				regulator-min-microvolt = <800000>;
+				regulator-max-microvolt = <3950000>;
+				regulator-always-on;
+				sssr = <0>; /* MAX77696_LDO_SSSR_100000 */
+			};
+
+			ldo2@1 {
+				reg = <1>;
+				regulator-name = "MAX77796-LDO2";
+				regulator-min-microvolt = <800000>;
+				regulator-max-microvolt = <3950000>;
+				regulator-always-on;
+				sssr = <0>; /* MAX77696_LDO_SSSR_100000 */
+			};
+
+			ldo3@2 {
+				reg = <2>;
+				regulator-name = "MAX77796-LDO3";
+				regulator-min-microvolt = <800000>;
+				regulator-max-microvolt = <3950000>;
+				regulator-always-on;
+				sssr = <0>; /* MAX77696_LDO_SSSR_100000 */
+			};
+
+			ldo4@3 {
+				reg = <3>;
+				regulator-name = "MAX77697-LDO4";
+				regulator-min-microvolt = <2200000>;
+				regulator-max-microvolt = <5350000>;
+				regulator-always-on;
+				sssr = <0>; /* MAX77696_LDO_SSSR_100000 */
+			};
+		};
+
+/*******************************************************************************
+ * Load Switches
+ ******************************************************************************/
+
+		max77796_lsw {
+			compatible = "maxim,max77796-lsws";
+			status = "okay";
+
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			lsw1@0 {
+				reg = <0>;
+				regulator-name = "MAX77796-LSW1";
+				regulator-always-on;
+				rt = <2>; /* MAX77696_LSW_RT_30000 */
+			};
+
+			lsw2@1 {
+				reg = <1>;
+				regulator-name = "MAX77796-LSW2";
+				regulator-always-on;
+				rt = <2>; /* MAX77696_LSW_RT_30000 */
+			};
+
+			lsw3@2 {
+				reg = <2>;
+				regulator-name = "MAX77796-LSW3";
+				regulator-always-on;
+				rt = <2>; /* MAX77696_LSW_RT_30000 */
+			};
+
+			lsw4@3 {
+				reg = <3>;
+				regulator-name = "MAX77796-LSW4";
+				regulator-always-on;
+				rt = <2>; /* MAX77696_LSW_RT_30000 */
+			};
+		};
+
+/*******************************************************************************
+ * EPD Power Supplies
+ ******************************************************************************/
+
+		max77796_epd {
+			compatible = "maxim,max77796-epds";
+			status = "okay";
+
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			/*
+			 * MAX77696_VREG_EPD_DISP 0
+			 * MAX77696_VREG_EPD_VCOM 1
+			 * MAX77696_VREG_EPD_VEE  2
+			 * MAX77696_VREG_EPD_VNEG 3
+			 * MAX77696_VREG_EPD_VPOS 4
+			 * MAX77696_VREG_EPD_VDDH 5
+			 */
+
+			/*disp_reg:*/ epd0@0 {
+				reg = <0>;
+				regulator-name = "MAX77796-DISP";
+			};
+
+			/*vcom_reg:*/ epd1@1 {
+				reg = <1>;
+				regulator-name = "MAX77796-VCOM";
+				regulator-min-microvolt = <44941100>; /* 50000000 + -5058900 */
+				regulator-max-microvolt = <50000000>; /* 50000000 +        0 */
+			};
+
+			/*vee_reg:*/ epd2@2 {
+				reg = <2>;
+				regulator-name = "MAX77796-VEE";
+				regulator-min-microvolt = <21980000>; /* 50000000 + -28020000 */
+				regulator-max-microvolt = <35000000>; /* 50000000 + -15000000 */
+				regulator-always-on;
+			};
+
+			/*vneg_reg:*/ epd3@3 {
+				reg = <3>;
+				regulator-name = "MAX77796-VNEG";
+				regulator-min-microvolt = <48380000>; /* 50000000 +  -1620000 */
+				regulator-max-microvolt = <51605750>; /* 50000000 +   1605750 */
+				regulator-always-on;
+			};
+
+			/*vpos_reg:*/ epd4@4 {
+				reg = <4>;
+				regulator-name = "MAX77796-VPOS";
+				regulator-min-microvolt = <58000000>; /* 50000000 +  8000000 */
+				regulator-max-microvolt = <68000000>; /* 50000000 + 18000000 */
+				regulator-always-on;
+			};
+
+			/*vddh_reg:*/ epd5@5 {
+				reg = <5>;
+				regulator-name = "MAX77796-VDDH";
+				regulator-min-microvolt = <65000000>; /* 50000000 + 15000000 */
+				regulator-max-microvolt = <79500000>; /* 50000000 + 29500000 */
+				regulator-always-on;
+			};
+		};
+
+/*******************************************************************************
+ * LPDDR2 VDDQ Supply
+ ******************************************************************************/
+
+		max77796_vddq {
+			compatible = "maxim,max77796-vddq";
+			status = "okay";
+			regulator-name = "MAX77796-VDDQ";
+			regulator-min-microvolt = <408000>; /* 0.5 VDDQIN * (1 - 60 / 100) */
+			regulator-max-microvolt = <984000>; /* 0.5 VDDQIN * (1 + 64 / 100) */
+			regulator-boot-on;
+			regulator-always-on;
+			input_uV = <1200000>;
+		};
+
+/*******************************************************************************
+ * Charger
+ ******************************************************************************/
+
+		max77796_charger {
+			compatible = "maxim,max77796-charger";
+			status = "okay";
+			psy_name = "max77796-charger";
+			supplied_to = "max77796-battery";
+		};
+
+/*******************************************************************************
+ * LED Indicators
+ ******************************************************************************/
+
+		max77796_leds {
+			compatible = "maxim,max77796-leds";
+			status = "okay";
+
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			green@0 {
+				label = "green";
+				reg = <0>;
+				linux,default-trigger = "none";
+				manual;
+				brightness = <255>; /* LED_FULL */
+				delay_on = <640>;
+				delay_off = <0>;
+			};
+
+			amber@1 {
+				label = "amber";
+				reg = <1>;
+				linux,default-trigger = "none";
+				/*manual;*/
+				/*brightness = <>;*/
+				/*delay_on = <>;*/
+				/*delay_off = <>;*/
+			};
+		};
+
+/*******************************************************************************
+ * Backlighting: WLED Boost Regulator
+ ******************************************************************************/
+
+		max77796_bl {
+			compatible = "maxim,max77796-bl";
+			status = "okay";
+
+			boot_brightness = <0xFFF>; /* full brightness */
+		};
+
+/*******************************************************************************
+ * Real-Time Clock
+ ******************************************************************************/
+
+		max77796_rtc {
+			compatible = "maxim,max77796-rtc";
+			status = "okay";
+
+			smpl_msec = <500>;
+		};
+
+/*******************************************************************************
+ * UIC
+ ******************************************************************************/
+
+		max77796_uic {
+			compatible = "maxim,max77796-uic";
+			status = "okay";
+
+			int_type = <0>; /* MAX77696_UIC_INTTYP_LEVEL */
+			int_delay = <0>; /* MAX77696_UIC_INTDLY_2TICKS */
+			int_polarity = <0>; /* MAX77696_UIC_INTPOL_ACTIVE_LOW */
+			/*chg_psy_name = "";*/
+		};
+
+/*******************************************************************************
+ * FuelGauge
+ ******************************************************************************/
+
+		max77796_fg {
+			compatible = "maxim,max77796-battery";
+			status = "okay";
+
+			psy_name = "max77796-battery";
+			supplied_from = "max77796-charger";
+			r_sns = <10>; /* mOhm */
+			valrt_max = <5100>; /* mV */
+			valrt_min = <3600>; /* mV */
+			talrt_max = <0>; /* C */
+			talrt_min = <0>; /* C */
+			salrt_max = <0>; /* % */
+			salrt_min = <0>; /* % */
+			ini {
+				batt0_ini {
+					title       = "m3_zc_small";
+					learncfg    = <0x2603>;
+					capacity    = <300>; /* mAh */
+					misccfg     = <0x0870>;
+					ichgterm    = <0x0180>;
+					filtercfg   = <0xCEA4>;
+					fullsocthr  = <0x5000>;
+					relaxcfg    = <0x20C9>;
+					dq_acc      = <0x0003>;
+					dp_acc      = <0x0140>;
+					qrtable00   = <0x3C00>;
+					qrtable10   = <0x1B80>;
+					qrtable20   = <0x0B04>;
+					qrtable30   = <0x0885>;
+					rcomp0      = <0x0070>;
+					tempco      = <0x263D>;
+					v_empty     = <0xA561>;
+					iavg_empty  = <0x03C0>;
+					modeldata   = /bits/ 16 <
+						/* 0 */
+						0x9760 0xA510 0xB100 0xB600 0xB7A0 0xB900 0xBA70 0xBC70
+						0xBDE0 0xBFC0 0xC250 0xC510 0xC990 0xCEA0 0xD040 0xD750
+						/* 1 */
+						0x0060 0x0120 0x0200 0x0710 0x0E80 0x0DF0 0x1430 0x1BD0
+						0x1520 0x0D70 0x0950 0x08E0 0x0800 0x0780 0x06B0 0x01E0
+						/* 3 */
+						0x0100 0x0100 0x0100 0x0100 0x0100 0x0100 0x0100 0x0100
+						0x0100 0x0100 0x0100 0x0100 0x0100 0x0100 0x0100 0x0100
+					>;
+				};
+
+				/***
+				batt1_ini {
+					...
+				};
+				***/
+			};
+		};
+
+/*******************************************************************************
+ * Key Input
+ ******************************************************************************/
+
+		max77796_key {
+			compatible = "maxim,max77796-key";
+			status = "okay";
+
+			mrt_sec = <12>;
+			keycode_en0 = <116/*KEY_POWER*/>; /* Will be disabled if KEY_MAX or undefined */
+			keycode_1sec = <0x2FF/*KEY_MAX*/>; /* Will be disabled if KEY_MAX or undefined */
+			keycode_mrwrn = <116/*KEY_POWER*/>; /* Will be disabled if KEY_MAX or undefined */
+		};
+
+	};
+};

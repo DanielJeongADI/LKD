@@ -1,0 +1,12 @@
+config MAX77696_CLK
+	bool "MAX77696 crystal-based oscillator support"
+	depends on MFD_MAX77696
+	help
+	  If you say yes here you get support for MAX77696 32KHz oscillator and
+	  buffered outputs.
+
+config MAX77696_UIC
+	bool "MAX77696 UIC support"
+	depends on MFD_MAX77696
+	help
+	  If you say yes here you get support for MAX77696 USB Interface Circuit.
