@@ -1,0 +1,451 @@
+/*
+ * Copyright (C) 2017 Maxim Integrated
+ *
+ * This file is part of MAX77812 Linux Driver
+ *
+ * MAX77812 Linux Driver is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or (at your
+ * option) any later version.
+ *
+ * MAX77812 Linux Driver is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+ * Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * MAX77812 Linux Driver. If not, see http://www.gnu.org/licenses/.
+ */
+
+/******************************************************************************
+ *** PLATFORM-SPECIFICS
+ *****************************************************************************/
+/***
+&maxim_miniq_gpio {
+    gpiocfg0 {
+        reg = <0>; // GPIO_K1
+        cfg = <0>; // 0=IN, 2=OUT_LO, 3=OUT_HI
+    };
+};
+
+// I2C
+&maxim_miniq_i2c {
+     max77812: max77812@34 {
+        status = "okay";
+        reg = <0x34>;	// PH_CFGx=0b000: 0x30(OTP=0) / 0x38(OTP=1)
+			// PH_CFGx=0b001: 0x31(OTP=0) / 0x39(OTP=1)
+			// PH_CFGx=0b010: 0x32(OTP=0) / 0x3A(OTP=1)
+			// PH_CFGx=0b011: 0x33(OTP=0) / 0x3B(OTP=1)
+			// PH_CFGx=0b1xx: 0x34(OTP=0) / 0x3C(OTP=1)
+    };
+};
+
+// SPI
+&maxim_miniq_spi {
+    max77812: max77812@0 {
+        status = "okay";
+        reg = <0>;			// CS#  = 0
+	spi-max-frequency=<30000000>;	// CLK  = Max 30MHz (Typ 26MHz)
+	//spi-cpha;			// CPHA = 0
+	//spi-cpol;			// CPOL = 0
+	//spi-cs-high;			// CS   = ActiveLow
+	//spi-3wire;
+	phase = <4>;	// Phase Config (BIT2|BIT1|BIT0 = PH_CFG2|PH_CFG1|PH_CFG0)
+			// (Only for SPI, and if not defined, phase = 1+1+1+1 by default
+			//  In case of using I2C, phase config will be detected by a slave address)
+			//   0     = 0b000 = 4-Phase(Master1)
+			//   1     = 0b001 = 3-Phase(Master1) + 1-Phase(Master4)
+			//   2     = 0b010 = 2-Phase(Master1) + 2-Phase(Master3)
+			//   3     = 0b011 = 2-Phase(Master1) + 1-Phase(Master3) + 1-Phase(Master4)
+			//   4...7 = 0b1xx = 1-Phase(Master1) + 1-Phase(Master2) + 1-Phase(Master3) + 1-Phase(Master4)
+    };
+};
+
+&max77812 {
+    interrupt-parent = <&maxim_miniq_gpio>;
+    interrupts = <0>;
+
+    gpi@0 {
+    };
+    gpi@1 {
+    };
+    buck@1 {
+    };
+    buck@2 {
+    };
+    buck@3 {
+    };
+    buck@4 {
+    };
+};
+***/
+/*****************************************************************************/
+
+&max77812 {
+	compatible  = "maxim,max77812";
+
+	interrupt-controller;
+	#interrupt-cells = <1>;		// MAX77812_INT_WDTRSTB   = 0
+					// MAX77812_INT_UVLO      = 1
+					// MAX77812_INT_TSHDN     = 2
+					// MAX77812_INT_TJCT_140C = 3
+					// MAX77812_INT_TJCT_120C = 4
+					// MAX77812_INT_M4_POKn   = 5
+					// MAX77812_INT_M3_POKn   = 6
+					// MAX77812_INT_M2_POKn   = 7
+					// MAX77812_INT_M1_POKn   = 8
+
+        #address-cells = <1>;
+        #size-cells = <0>;
+
+	/*pinctrl-names = "default", "sleep";*/
+	/*pinctrl-0 = <>;*/
+	/*pinctrl-n = <>;*/
+
+	/*interrupts = <?>;*/		// Interrupts
+
+	/*phase = <4>;*/		// Phase Config (BIT2|BIT1|BIT0 = PH_CFG2|PH_CFG1|PH_CFG0)
+					// (Only for SPI, and if not defined, phase = 1+1+1+1 by default
+					//  In case of using I2C, phase config will be detected by a slave address)
+					//   0     = 0b000 = 4-Phase(Master1)
+					//   1     = 0b001 = 3-Phase(Master1) + 1-Phase(Master4)
+					//   2     = 0b010 = 2-Phase(Master1) + 2-Phase(Master3)
+					//   3     = 0b011 = 2-Phase(Master1) + 1-Phase(Master3) + 1-Phase(Master4)
+					//   4...7 = 0b1xx = 1-Phase(Master1) + 1-Phase(Master2) + 1-Phase(Master3) + 1-Phase(Master4)
+
+	/*glb_en_ctrl_gpio;*/		// boolean, driver will control glb_en_gpio for global EN
+					// (Driver will request the gpio as max77812-en
+					//  And, gpi/gpio will be controlled if gpi/func=GLB_EN and gpi/gpio_owner)
+	/*glb_en_gpio = <>;*/		// system GPIO connected with EN pin
+
+	/*glb_lpm_ctrl_gpio;*/		// boolean, driver will control glb_lpm_gpio for global LPM
+					// (Driver will request the gpio as max77812-lpm
+					//  And gpi/gpio will be controlled if gpi/func=GLB_LPM and gpi/gpio_owner)
+	/*glb_lpm_gpio = <>;*/		// system GPIO connected with LPM pin
+
+	/*dly_step = <0>;*/		// delay time step
+					// (use current device value if not defined)
+					//   0 = 1ms / 1 = 2ms
+
+	/*wdt_deb = <2>;*/		// WDTRSTB_IN debounce time
+					// (use current device value if not defined)
+					//   0 =  0.0ms
+					//   1 =  0.8ms
+					//   2 =  1.6ms
+					//   3 =  3.2ms
+					//   4 =  6.4ms
+					//   5 = 12.8ms
+					//   6 = 25.6ms
+					//   7 = 51.2ms
+
+	/*tshdn_en = <1>;*/		// thermal protection enable
+					// (use current device value if not defined)
+					//   0 = disable / 1 = enable
+
+	/*uvlo_f = <2>;*/		// Vsys UVLO falling threshold
+					// (use current device value if not defined)
+					//   0 = 1.95V ... 6 = 2.55V (0.10V step)
+					//   7 = disable
+
+	/*sd_sr = <2>;*/		// shut-down slew rate
+					// (use current device value if not defined)
+					//   0 =  1.25mV/us
+					//   1 =  2.50mV/us
+					//   2 =  5.00mV/us
+					//   3 = 10.00mV/us
+					//   4 = 20.00mV/us
+					//   5 = 40.00mV/us
+					//   6 = 60.00mV/us
+					//   7 = 60.00mV/us
+
+	/*ss_sr = <4>;*/		// soft-start slew rate
+					// (use current device value if not defined)
+					//   0 =  1.25mV/us
+					//   1 =  2.50mV/us
+					//   2 =  5.00mV/us
+					//   3 = 10.00mV/us
+					//   4 = 20.00mV/us
+					//   5 = 40.00mV/us
+					//   6 = 60.00mV/us
+					//   7 = 60.00mV/us
+
+	/*rd_sr = <2>;*/		// ramp-down slew rate
+					// (use current device value if not defined)
+					//   0 =  1.25mV/us
+					//   1 =  2.50mV/us
+					//   2 =  5.00mV/us
+					//   3 = 10.00mV/us
+					//   4 = 20.00mV/us
+					//   5 = 40.00mV/us
+					//   6 = 60.00mV/us
+					//   7 = 60.00mV/us
+
+	/*ru_sr = <4>;*/		// ramp-up slew rate
+					// (use current device value if not defined)
+					//   0 =  1.25mV/us
+					//   1 =  2.50mV/us
+					//   2 =  5.00mV/us
+					//   3 = 10.00mV/us
+					//   4 = 20.00mV/us
+					//   5 = 40.00mV/us
+					//   6 = 60.00mV/us
+					//   7 = 60.00mV/us
+
+	/*ishare_en = <1>;*/		// current sharing enable
+					// (use current device value if not defined)
+					//   0 = disable / 1 = enable
+
+	/*bdbk_en = <1>;*/		// low-side MOSFET body breaking control during PETR
+					// (use current device value if not defined)
+					//   0 = disable / 1 = enable
+
+	/*petr_en = <1>;*/		// PETR(Positive Enhanced Transient Response) enable
+					// (use current device value if not defined)
+					//   0 = disable / 1 = enable
+
+	/*netr_en = <1>;*/		// NETR(Negative Enhanced Transient Response) enable
+					// (use current device value if not defined)
+					//   0 = disable / 1 = enable
+
+	/*gpi_lpm_deb = <1>;*/		// GPIx LPM debounce time
+					// (use current device value if not defined)
+					//   0 = 0us ... 15 = 960us (64us step)
+	/*gpi_lpm_pd_en = <1>;*/	// GPIx LPM pull-down resistor enable
+					// (use current device value if not defined)
+					//   0 = disable / 1 = enable
+	/*gpi_en_deb = <1>;*/		// GPIx EN debounce time
+					// (use current device value if not defined)
+					//   0 = 0us ... 15 = 960us (64us step)
+	/*gpi_en_pd_en = <1>;*/		// GPIx EN pull-down resistor enable
+					// (use current device value if not defined)
+					//   0 = disable / 1 = enable
+	max77812_gpi0: gpi@0 {
+		reg = <0>;		// GPI0
+
+		/*gpio_owner;*/		// boolean, driver will request the gpio as max77812-gpix
+		/*gpio = <>;*/          // system GPIO connected with
+
+		/*func = <3>;*/		// GPIx function
+					// (use current device value if not defined)
+					//    0 = GLB_EN
+					//    1 = M1_EN
+					//    2 = M2_EN
+					//    3 = M3_EN
+					//    4 = M4_EN
+					//    5 = GLB_VSEL
+					//    6 = M1_VSEL
+					//    7 = M2_VSEL
+					//    8 = M3_VSEL
+					//    9 = M4_VSEL
+					//   10 = GLB_LPM
+					//   11 = M1_LPM
+					//   12 = M2_LPM
+					//   13 = M3_LPM
+					//   14 = M4_LPM
+					//   15 = No Function
+		/*deb = <1>;*/		// GPIx debounce time
+					// (use current device value if not defined)
+					//   0 = 0us ... 15 = 960us (64us step)
+		/*pd_en = <1>;*/	// GPIx pull-down resistor enable
+					// (use current device value if not defined)
+					//   0 = disable / 1 = enable
+	};
+	max77812_gpi1: gpi@1 {
+		reg = <1>;		// GPI1
+		/*gpio_owner;*/
+		/*gpio = <>;*/
+		/*func = <4>;*/
+		/*deb = <1>;*/
+		/*pd_en = <1>;*/
+	};
+
+	max77812_buck1: buck@1 {
+		/* Master1 DT (available for all ph_cfg) */
+
+		compatible = "maxim,max77812-buck1";
+
+                regulator-name = "MAX77812-BUCK1";	// a string used as a descriptive name for regulator outputs
+                /*regulator-always-on;*/		// boolean, regulator should never be disabled
+		/*regulator-boot-on;*/			// bootloader/firmware enabled regulator
+		/*<name>-supply = <?>;*/		// phandle to the parent supply/regulator node
+
+		/*no_idle_mode;*/	// boolean, REGULATOR_MODE_IDLE is not supported
+
+		/*en_ctrl_mask = <1>;*/	// control options for enabling/disabling
+					// (en_ctrl_mask = 0x1 by default)
+					// BIT1 = GPIO defined by the node "gpi/gpio"
+					//        ("gpi/func=Mx_EN" and "gpio/gpio_owner" are required)
+					// BIT0 = a bit of EN_CTRL register
+		/*lpm_ctrl_mask = <1>;*/// control options for LPM
+					// (lpm_ctrl_mask = 0x1 by default)
+					// BIT1 = GPIO defined by the node "gpi/gpio"
+					//        ("gpi/func=Mx_LPM" and "gpio/gpio_owner" are required)
+					// BIT0 = a bit of EN_CTRL register
+
+		/*shdn_dly = <0>;*/	// shut-down delay time (delay from falling edge of EN pin or GLB_EN)
+					//   0 = 0ms ... 31 = 31 x DLY_STEP
+		/*ad_en = <1>;*/	// active discharge enable
+					// (use current device value if not defined)
+					//   0 = disable / 1 = enable
+		/*ilim = <5>;*/		// PMOS peak / NMOS valley current limit
+					// (use current device value if not defined)
+					//   0 = 3.0A / 2.0A
+					//   1 = 3.6A / 2.4A
+					//   2 = 4.2A / 2.8A
+					//   3 = 4.8A / 3.2A
+					//   4 = 5.4A / 3.6A
+					//   5 = 6.0A / 4.0A
+					//   6 = 6.6A / 4.4A
+					//   7 = 7.2A / 4.8A
+		/*fpwm_en = <0>;*/	// forced PWM enable
+					// (use current device value if not defined)
+					//   0 = disable / 1 = enable
+		/*fsr_en = <1>;*/	// falling slew rate control enable
+					// (use current device value if not defined)
+					//   0 = disable / 1 = enable
+	};
+
+	max77812_buck2: buck@2 {
+		/* Master2 DT (available only for ph_cfg=4...7) */
+
+		compatible = "maxim,max77812-buck2";
+
+                regulator-name = "MAX77812-BUCK2";	// a string used as a descriptive name for regulator outputs
+                /*regulator-always-on;*/		// boolean, regulator should never be disabled
+		/*regulator-boot-on;*/			// bootloader/firmware enabled regulator
+		/*<name>-supply = <?>;*/		// phandle to the parent supply/regulator node
+
+		/*no_idle_mode;*/	// boolean, REGULATOR_MODE_IDLE is not supported
+
+		/*en_ctrl_mask = <1>;*/	// control options for enabling/disabling
+					// (en_ctrl_mask = 0x1 by default)
+					// BIT1 = GPIO defined by the node "gpi/gpio"
+					//        ("gpi/func=Mx_EN" and "gpio/gpio_owner" are required)
+					// BIT0 = a bit of EN_CTRL register
+		/*lpm_ctrl_mask = <1>;*/// control options for LPM
+					// (lpm_ctrl_mask = 0x1 by default)
+					// BIT1 = GPIO defined by the node "gpi/gpio"
+					//        ("gpi/func=Mx_LPM" and "gpio/gpio_owner" are required)
+					// BIT0 = a bit of EN_CTRL register
+
+		/*stup_dly = <0>;*/	// start-up delay time (delay from rising edge of EN pin or GLB_EN)
+					//   0 = 0ms ... 31 = 31 x DLY_STEP
+		/*shdn_dly = <0>;*/	// shut-down delay time (delay from falling edge of EN pin or GLB_EN)
+					//   0 = 0ms ... 31 = 31 x DLY_STEP
+		/*ad_en = <1>;*/	// active discharge enable
+					// (use current device value if not defined)
+					//   0 = disable / 1 = enable
+		/*ilim = <5>;*/		// PMOS peak / NMOS valley current limit
+					// (use current device value if not defined)
+					//   0 = 3.0A / 2.0A
+					//   1 = 3.6A / 2.4A
+					//   2 = 4.2A / 2.8A
+					//   3 = 4.8A / 3.2A
+					//   4 = 5.4A / 3.6A
+					//   5 = 6.0A / 4.0A
+					//   6 = 6.6A / 4.4A
+					//   7 = 7.2A / 4.8A
+		/*fpwm_en = <0>;*/	// forced PWM enable
+					// (use current device value if not defined)
+					//   0 = disable / 1 = enable
+		/*fsr_en = <1>;*/	// falling slew rate control enable
+					// (use current device value if not defined)
+					//   0 = disable / 1 = enable
+	};
+
+	max77812_buck3: buck@3 {
+		/* Master3 DT (available only for ph_cfg=2, 3 and 4...7) */
+
+		compatible = "maxim,max77812-buck3";
+
+                regulator-name = "MAX77812-BUCK3";	// a string used as a descriptive name for regulator outputs
+                /*regulator-always-on;*/		// boolean, regulator should never be disabled
+		/*regulator-boot-on;*/			// bootloader/firmware enabled regulator
+		/*<name>-supply = <?>;*/		// phandle to the parent supply/regulator node
+
+		/*no_idle_mode;*/	// boolean, REGULATOR_MODE_IDLE is not supported
+
+		/*en_ctrl_mask = <1>;*/	// control options for enabling/disabling
+					// (en_ctrl_mask = 0x1 by default)
+					// BIT1 = GPIO defined by the node "gpi/gpio"
+					//        ("gpi/func=Mx_EN" and "gpio/gpio_owner" are required)
+					// BIT0 = a bit of EN_CTRL register
+		/*lpm_ctrl_mask = <1>;*/// control options for LPM
+					// (lpm_ctrl_mask = 0x1 by default)
+					// BIT1 = GPIO defined by the node "gpi/gpio"
+					//        ("gpi/func=Mx_LPM" and "gpio/gpio_owner" are required)
+					// BIT0 = a bit of EN_CTRL register
+
+		/*stup_dly = <0>;*/	// start-up delay time (delay from rising edge of EN pin or GLB_EN)
+					//   0 = 0ms ... 31 = 31 x DLY_STEP
+		/*shdn_dly = <0>;*/	// shut-down delay time (delay from falling edge of EN pin or GLB_EN)
+					//   0 = 0ms ... 31 = 31 x DLY_STEP
+		/*ad_en = <1>;*/	// active discharge enable
+					// (use current device value if not defined)
+					//   0 = disable / 1 = enable
+		/*ilim = <5>;*/		// PMOS peak / NMOS valley current limit
+					// (use current device value if not defined)
+					//   0 = 3.0A / 2.0A
+					//   1 = 3.6A / 2.4A
+					//   2 = 4.2A / 2.8A
+					//   3 = 4.8A / 3.2A
+					//   4 = 5.4A / 3.6A
+					//   5 = 6.0A / 4.0A
+					//   6 = 6.6A / 4.4A
+					//   7 = 7.2A / 4.8A
+		/*fpwm_en = <0>;*/	// forced PWM enable
+					// (use current device value if not defined)
+					//   0 = disable / 1 = enable
+		/*fsr_en = <1>;*/	// falling slew rate control enable
+					// (use current device value if not defined)
+					//   0 = disable / 1 = enable
+	};
+
+	max77812_buck4: buck@4 {
+		/* Master4 DT (available only for ph_cfg=1, 3 and 4...7) */
+
+		compatible = "maxim,max77812-buck4";
+
+                regulator-name = "MAX77812-BUCK4";	// a string used as a descriptive name for regulator outputs
+                /*regulator-always-on;*/		// boolean, regulator should never be disabled
+		/*regulator-boot-on;*/			// bootloader/firmware enabled regulator
+		/*<name>-supply = <?>;*/		// phandle to the parent supply/regulator node
+
+		/*no_idle_mode;*/	// boolean, REGULATOR_MODE_IDLE is not supported
+
+		/*en_ctrl_mask = <1>;*/	// control options for enabling/disabling
+					// (en_ctrl_mask = 0x1 by default)
+					// BIT1 = GPIO defined by the node "gpi/gpio"
+					//        ("gpi/func=Mx_EN" and "gpio/gpio_owner" are required)
+					// BIT0 = a bit of EN_CTRL register
+		/*lpm_ctrl_mask = <1>;*/// control options for LPM
+					// (lpm_ctrl_mask = 0x1 by default)
+					// BIT1 = GPIO defined by the node "gpi/gpio"
+					//        ("gpi/func=Mx_LPM" and "gpio/gpio_owner" are required)
+					// BIT0 = a bit of EN_CTRL register
+
+		/*stup_dly = <0>;*/	// start-up delay time (delay from rising edge of EN pin or GLB_EN)
+					//   0 = 0ms ... 31 = 31 x DLY_STEP
+		/*shdn_dly = <0>;*/	// shut-down delay time (delay from falling edge of EN pin or GLB_EN)
+					//   0 = 0ms ... 31 = 31 x DLY_STEP
+		/*ad_en = <1>;*/	// active discharge enable
+					// (use current device value if not defined)
+					//   0 = disable / 1 = enable
+		/*ilim = <5>;*/		// PMOS peak / NMOS valley current limit
+					// (use current device value if not defined)
+					//   0 = 3.0A / 2.0A
+					//   1 = 3.6A / 2.4A
+					//   2 = 4.2A / 2.8A
+					//   3 = 4.8A / 3.2A
+					//   4 = 5.4A / 3.6A
+					//   5 = 6.0A / 4.0A
+					//   6 = 6.6A / 4.4A
+					//   7 = 7.2A / 4.8A
+		/*fpwm_en = <0>;*/	// forced PWM enable
+					// (use current device value if not defined)
+					//   0 = disable / 1 = enable
+		/*fsr_en = <1>;*/	// falling slew rate control enable
+					// (use current device value if not defined)
+					//   0 = disable / 1 = enable
+	};
+};
