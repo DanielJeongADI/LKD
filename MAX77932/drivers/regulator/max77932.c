@@ -241,7 +241,7 @@ static int max77932_init_regulator(struct max77932_chip *pchip,
 		if (ret < 0)
 			return ret;
 	}
-
+	config.init_data = max77932_init_data;
 	config.regmap = pchip->regmap;
 	config.driver_data = pchip;
 	config.dev = dev;
@@ -412,7 +412,7 @@ static const struct of_device_id max77932_of_match[] = {
 	{},
 };
 
-MODULE_DEVICE_TABLE(of, ltc3676_of_match);
+MODULE_DEVICE_TABLE(of, max77932_of_match);
 
 static struct i2c_driver max77932_driver = {
 	.driver = {
