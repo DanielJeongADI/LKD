@@ -1,0 +1,14 @@
+Maxim Integrated MAX77816 High Efficiency Buck-Boost Converter
+
+Required properties:
+- compatible: "maxim,max77816"
+- reg: I2C slave address
+
+Optional properties:
+
+Example:
+
+	max77816: max77816@18 {
+		compatible = "maxim,max77816";
+		reg = <0x18>;
+	};
