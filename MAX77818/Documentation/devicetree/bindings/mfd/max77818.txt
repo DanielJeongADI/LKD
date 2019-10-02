@@ -1,0 +1,52 @@
+Maxim MAX77818 multi-functional device
+MAX77818 is a Mulitifunction device with Charger, regulators, and fuelgauge.
+* PMIC * Required properties:
+ - compatible : Must be "maxim,max77818".
+ - interrupt-parent : The parent interrupt controller.
+ - interrupts : Interrupt number.
+ - interrupt-controller : Mark the device node as an interrupt controller.
+ - #interrupt-cells : Should be one. 
+ 	- The cell is the max77818 local IRQ number
+
+Nodes:
+- regulator
+- charger
+- fulegauge
+
+Example: max77818@66 { 
+			compatible = "maxim,max77818";
+			#address-cells = <0>;
+			max77818,int-gpio = //TBD
+			interrupt-parent = //TBD
+			interrupts = //TBD
+			interrupt-controller;
+			#interrupt-cells = <1>;
+			reg = <0x66>;
+			status = "ok";
+			regulator {
+				SAFEOUT1 {
+					regulator-boot-on;
+					regulator-always-on;
+				};
+				SAFEOUT2 {
+					// TBD
+				};
+			};
+			charger {
+				compatible = "maxim,max77818-charger";
+				status = "disable";
+				/* Charger */
+				fast_charge_timer = <0>; /* disable(0), hours */
+				fast_charge_current = <1500>; /* mA */
+				charge_termination_voltage = <4350>; /* mV */
+				topoff_timer = <0>; /* min */
+				topoff_current = <200> /* mA */
+				restart_threshold = <150> /* mV */
+				input_current_limit = <500> /* mA */
+				// TBD
+			};
+			fuelgauge {
+				compatible = "maxim,max77818-fuelgauge";
+				fuelgauge,fuel_alert_soc = <2>;
+			};
+		};
