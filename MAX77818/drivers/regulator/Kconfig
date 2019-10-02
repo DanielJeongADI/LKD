@@ -1,0 +1,14 @@
+#
+# Multifunction miscellaneous devices
+#
+
+config REGULATOR_MAX77818
+	bool "Maxim Integrated MAX77818 Regulator"
+	depends on MFD_MAX77818
+	help
+	  Say yes here to add support for Maxim Integrated MAX77818. 
+  	  This is a 3A Switch Mode Charger with Fuel Gauge.
+  	  This driver provides common support for accessing the device,
+  	  additional drivers must be enabled in order to use the functionality
+  	  of the device.
+
