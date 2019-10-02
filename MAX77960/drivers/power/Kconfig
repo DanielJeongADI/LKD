@@ -1,0 +1,10 @@
+
+config CHARGER_MAX77960
+	bool "Maxim Integrated MAX77960 Charger Support"
+	depends on I2C=y
+	help
+	  Say yes here to add support for Maxim Integrated MAX77960. 
+  	  This is a high performance wide input 6A Buck-Boost charger.
+  	  This driver provides common support for accessing the device,
+  	  additional drivers must be enabled in order to use the functionality
+ 	  of the device.

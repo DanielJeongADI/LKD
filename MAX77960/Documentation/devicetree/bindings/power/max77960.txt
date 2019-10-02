@@ -1,0 +1,14 @@
+Required properties :
+ - compatible : "max77960"
+
+Example:
+
+&i2c_6 {                          
+	status = "okay";              
+	max77960: charger@69 {                 
+		compatible = "max77960";  
+		reg = <0x69>;
+		max77960,irq-gpio = <&tlmm 92 0x00>;
+	};
+}; 
+
