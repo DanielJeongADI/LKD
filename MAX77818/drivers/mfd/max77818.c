@@ -16,6 +16,8 @@
 #include <linux/mutex.h>
 #include <linux/interrupt.h>
 #include <linux/i2c.h>
+#include <linux/firmware.h>
+#include <linux/string.h>
 
 /* for Regmap */
 #include <linux/regmap.h>
@@ -33,7 +35,7 @@
 
 #define DRIVER_DESC    "MAX77818 MFD Driver"
 #define DRIVER_NAME    MAX77818_NAME
-#define DRIVER_VERSION "1.0"
+#define DRIVER_VERSION "1.1"
 #define DRIVER_AUTHOR  "opensource@maximintegrated.com "
 
 #define I2C_ADDR_PMIC		(0xCC >> 1)	/* PMIC (CLOGIC/SAFELDOs) */
@@ -253,6 +255,53 @@ out:
 	return rc;
 
 }
+
+static int max77818_pre_init_data(struct max77818_dev *pmic)
+{
+#ifdef CONFIG_OF
+	int size, cnt;
+	const int *list;
+	struct device *dev = pmic->dev;
+	struct device_node *np = dev->of_node;
+
+	u8 *init_data;
+
+	list = of_get_property(np, "max77818,pmic-init", &size);
+	if (list) {
+		init_data = (u8*)kmalloc(size, GFP_KERNEL);
+		of_property_read_u8_array(np, "max77818,pmic-init", init_data, size);
+		for(cnt = 0; cnt < size; cnt+=2){
+			max77818_write(pmic->regmap_pmic, 
+					init_data[cnt],init_data[cnt+1]);
+		}	
+		kfree(init_data);
+	}
+
+	list = of_get_property(np, "max77818,chg-init", &size);
+	if (list) {
+		init_data = (u8*)kmalloc(size, GFP_KERNEL);
+		of_property_read_u8_array(np, "max77818,chg-init", init_data, size);
+		for(cnt = 0; cnt < size; cnt+=2){
+			max77818_write(pmic->regmap_chg, 
+					init_data[cnt],init_data[cnt+1]);
+		}
+		kfree(init_data);
+	}
+
+	list = of_get_property(np, "max77818,fg-init", &size);
+	if(list) {
+		init_data = (u8*)kmalloc(size, GFP_KERNEL);
+		of_property_read_u8_array(np, "max77818,fg-init", init_data, size);	
+		for(cnt = 0; cnt < size; cnt+=3) {
+			max77818_fg_write(pmic->regmap_fuel, init_data[cnt], 
+					(init_data[cnt+1]<<8) | init_data[cnt+2]);
+		}
+		kfree(init_data);
+	}
+#endif
+	return 0;
+}
+
 
 static void *max77818_pmic_get_platdata(struct max77818_dev *pmic)
 {
@@ -485,7 +534,7 @@ static int max77818_i2c_probe(struct i2c_client *client,
 			client->name,	rc);
 		goto abort;
 	}
-
+	max77818_pre_init_data(me);
 	rc = max77818_pmic_setup(me);
 	if (rc != 0) {
 		pr_err("<%s> failed to set up interrupt\n",
