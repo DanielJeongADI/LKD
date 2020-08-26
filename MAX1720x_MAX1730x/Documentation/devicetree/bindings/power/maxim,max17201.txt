@@ -1,0 +1,38 @@
+Maxim Max17201/Max17205 Stand-Alone ModelGauge m5 Fuel Gauge
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Required properties:
+ - compatible      : should contain one of the following:
+						"maxim,max17201"
+						"maxim,max17205"
+						"maxim,max17301"
+						"maxim,max17302"
+						"maxim,max17303"
+ - reg             : I2C bus address of the device (0x36)
+
+Optional properties:
+ - maxim,rsense    : Rsense register value in miliOhm
+ - maxim,talrt-min : Lower temperature limit(in DegreeC) that generates ALRT1 pin interrupt
+ - maxim,talrt-max : Upper temperature limit(in DegreeC) that generates ALRT1 pin interrupt
+ - maxim,valrt-min : Lower voltage limit(in mV) that generates ALRT1 pin interrupt
+ - maxim,valrt-max : Upper voltage limit(in mV) that generates ALRT1 pin interrupt
+ - maxim,salrt-min : Lower state of charge limit(in percent) that generates ALRT1 pin interrupt
+ - maxim,salrt-max : Upper state of charge limit(in percent) that generates ALRT1 pin interrupt
+ - maxim,ialrt-min : Lower current limit(in mA) that generates ALRT1 pin interrupt
+ - maxim,ialrt-max : Upper current limit(in mA) that generates ALRT1 pin interrupt
+
+Example:
+
+	max17201@32 {
+		compatible  = "maxim,max17201";
+		reg         = <0x32>;
+		rsense      = <10>;      /* miliOhm */
+		talrt-min   = <0>;       /* DegreeC */
+		talrt-max   = <50>;      /* DegreeC */
+		valrt-min   = <3000>;    /* mV */
+		valrt-max   = <4500>;    /* mV */
+		salrt-min   = <1>;       /* Percent */
+		salrt-max   = <99>;      /* Percent */
+		ialrt-min   = <(-5000)>; /* mA */
+		ialrt-max   = <5000>;    /* mA */
+	};
