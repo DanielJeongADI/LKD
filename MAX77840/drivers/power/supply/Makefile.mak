@@ -1,0 +1,1 @@
+obj-$(CONFIG_POWER_MAX77840) += max77840-charger.o max77840-charger-detect.o max77840-battery.o

@@ -1,0 +1,17 @@
+Device Tree regulator bindings for max77840 regulator
+
+Required nodes:
+- nodes:
+  - SAFEOUT1 for safeout1
+
+Optional properties:
+- init_data:		regulator constraints
+
+Example:
+	regulator {
+		SAFEOUT1 {
+			regulator-boot-on;
+			regulator-always-on;
+		};
+
+	};

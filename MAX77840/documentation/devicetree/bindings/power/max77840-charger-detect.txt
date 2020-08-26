@@ -1,0 +1,13 @@
+Device Tree bindings for max77840 Charger Detect
+
+Required Properties :
+ - compatible : Should be "maxim,max77840-charger=detect".
+
+Optional Properties :
+ - 
+
+Example:
+
+		charger {
+			compatible = "maxim,max77840-charger-detect";
+		};

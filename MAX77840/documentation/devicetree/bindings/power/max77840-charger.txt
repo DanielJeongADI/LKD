@@ -1,0 +1,19 @@
+Device Tree bindings for max77840 Charger
+
+Required Properties :
+ - compatible : Should be "maxim,max77840-charger".
+
+Optional Properties :
+ - fast_charge_timer : fast charge timer (hr) 
+ - fast_charge_current : fast charge current(mA)
+ - charge_termination_voltage : CV voltage(mV)
+ - topoff_timer : topoff timer (min)
+ - topoff_current : topoff current (mA)
+ - restart_threshold : restart threshold (mV)
+ - input_current_limit : input current limit (mA)
+
+Example:
+
+		charger {
+			compatible = "maxim,max77840-charger";
+		};

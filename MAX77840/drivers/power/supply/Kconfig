@@ -1,0 +1,10 @@
+
+config POWER_MAX77840
+	bool "Maxim Integrated MAX77840 Charger with Fuel Gauge"
+	depends on MFD_MAX77840
+	help
+	  Say Y to enable support for Maxim Integrated MAX77840. 
+  	  This is a 3A Switch Mode Charger with Fuel Gauge.
+  	  This driver provides common support for accessing the device,
+  	  additional drivers must be enabled in order to use the functionality
+ 	  of the device.
