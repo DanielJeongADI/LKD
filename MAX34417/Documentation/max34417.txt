@@ -1,0 +1,38 @@
+Kernel driver max34417
+======================
+
+Supported chips:
+  * Maxim MAX34417
+    Prefix: 'max34417'
+    Addresses scanned: -
+    Datasheet: https://datasheets.maximintegrated.com/en/ds/MAX34417.pdf
+
+Author: Erman Komurcu <Erman.Komurcu@maximintegrated.com>
+
+Description
+-----------
+
+This driver implements support for the Maxim MAX34417 chip.
+
+The MAX34417 is a specialized current and voltage monitor used to
+determine power consumption of portable systems.
+
+The device has a very wide dynamic range (20,000:1) that allows for
+the accurate measurement of power in such systems. The device is configured
+and monitored with a standard I2C/SMBus serial interface.
+
+Sysfs Attributes
+----------------
+
+Following is a list of all sysfs attributes that the driver provides, their
+permissions and a short description:
+
+Name				Perm	Description
+----				----	-----------
+in[0-3]_input	    RO      Measured voltage in millivolts.
+power[1-4]_input    RO      Measured power in microwatts. Only valid in Single Measure Mode.
+power[1-4]_average  RO      Measured average power in microwatts. Only valid in Continuous Accumulate Mode.
+measurement_mode    RW      Active measurement mode, smm of Single Measure Mode, cam for Continuous Accumulate Mode.
+park_mode	    RW      Activate park mode, enabled for activation, disabled for deactivation
+park_value	    RW	    Choose channel for measurement
+perr_verr_mode      RW	    Activate perr_verr correction, enabled for activation, disabled for deactivation		
