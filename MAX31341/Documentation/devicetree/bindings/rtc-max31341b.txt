@@ -1,0 +1,38 @@
+Dallas DS1307 and compatible RTC
+
+Required properties:
+- compatible: should be one of:
+	"maxim,max31341b"
+- reg: I2C bus address of the device
+
+Optional properties:
+- interrupts: rtc alarm interrupt.
+- wakeup-source: Enables wake up of host system on alarm
+- trickle-resistor-ohms : Selected resistor for trickle charger
+	Possible values are 3000, 6000, 11000
+	Should be given if trickle charger should be enabled
+- trickle-diode-enable : Enables extra diode for trickle charger
+	Should be given if internal trickle charger diode should be enabled
+	Should not be given if internal trickle charger diode should be disabled
+- backup-threshold : Changes default value of backup threshold voltage
+	Possible values are 0 for 1.3V, 1 for 1.7V, 2 for 2.0V, 3 for 2.2V
+	Should be given if default value (1.7V) needs to be changed
+- power-management: Changes default power management mode (mode 1)
+	Possible values are 
+	0 for comparator mode,
+	1 for power management auto and trickle charger is on,
+	2 for power management manual and trickle charger is on, Vcc is active supply
+	3 for power management manual and trickle charger is on, AIN is active supply,
+	if AIN > Vcc
+
+Example:
+	max31341b: max31341b@69 {
+		compatible = "maxim,max31341b";
+		reg = <0x69>;
+		interrupt-parent = <&gpio>;
+		interrupts = <16 8>;
+		trickle-resistor-ohms=<6000>;
+		backup-threshold=<3>;
+		power-management=<1>;
+		trickle-diode-enable="OK";
+	};
