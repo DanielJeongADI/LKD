@@ -1,0 +1,37 @@
+Maxim MAX31343 and compatible R
+
+Required properties:
+- compatible: should be one of:
+	"maxim,max31343"
+- reg: I2C bus address of the device
+
+Optional properties:
+- interrupts: rtc alarm interrupt.
+- wakeup-source: Enables wake up of host system on alarm
+- trickle-resistor-ohms : Selected resistor for trickle charger
+	Possible values are 3000, 6000, 11000
+	Should be given if trickle charger should be enabled
+- trickle-diode-enable : Enables extra diode for trickle charger
+	Should be given if internal trickle charger diode should be enabled
+	Should not be given if internal trickle charger diode should be disabled
+- backup-threshold : Changes default value of backup threshold voltage
+	Possible values are 0 for 1.8, 1 for 2.0V, 2 for 2.8V
+	Should be given if default value (2.8V) needs to be changed
+- power-management: Changes default power management mode (mode 1)
+	Possible values are 
+	0 for power management auto,
+	1 for power management manual and Vcc is active supply
+	2 for power management manual and Vbat is active supply,
+	if AIN > Vcc
+
+Example:
+	max31343: max31343@D0 {
+		compatible = "maxim,max31343";
+		reg = <0xD0>;
+		interrupt-parent = <&gpio>;
+		interrupts = <16 8>;
+		trickle-resistor-ohms=<6000>;
+		backup-threshold=<3>;
+		power-management=<1>;
+		trickle-diode-enable="OK";
+	};
