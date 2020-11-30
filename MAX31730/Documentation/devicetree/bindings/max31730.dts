@@ -1,0 +1,40 @@
+//
+/dts-v1/;
+/plugin/;
+
+
+/{
+	compatible = "brcm, bcm2835";
+
+	fragment@0 {
+		target = <&i2c_arm>;
+		
+		__dormant__ {
+			#address-cell = <1>;
+			#size-cells = <0>;
+			status = "okay";
+			
+			max31730: max31730@1C {
+				compatible = "maxim,max31730";
+				status				= "okay";
+				reg					= <0x1C>; // I2C_ADDR
+				
+				interrupt-parent	= <&gpio>;
+				interrupts			= <16 2>;    	// 7th pin for 10-uMAX
+				
+				all-temp-min		= <(-55000)>;	// milliDegreeC
+				local-temp-max		= <127000>;		// milliDegreeC
+				remote1-temp-max	= <127000>;		// milliDegreeC
+				remote2-temp-max	= <127000>;		// milliDegreeC
+				remote3-temp-max	= <127000>;		// milliDegreeC
+				
+			};
+		  };
+	};
+	
+	__overrides__ {
+		max31730 = <0>, "+0";
+		
+		addr = <&max31730>, "reg:0";
+	};
+};

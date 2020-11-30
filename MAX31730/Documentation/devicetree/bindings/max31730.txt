@@ -1,0 +1,39 @@
+Maxim MAX31730 3-Channel Remote Temperature Sensor Support
+
+https://datasheets.maximintegrated.com/en/ds/MAX31730.pdf
+
+The node for this driver must be a child node of a I2C controller, hence
+all mandatory properties for your controller must be specified. See directory:
+
+        Documentation/devicetree/bindings/i2c
+
+for more details.
+
+Optional property:
+	- interrupts: interrupt mapping for GPIO IRQ (level active low). 
+	  If not used, the driver will use comparator mode.
+
+Required properties:
+	- compatible: must be "maxim,max31730"
+	- reg: the I2C address of the sensor (default 0x38 but right shifted 0x1c)
+			-----------------------------------
+			|RESISTOR BETWEEN | SLAVE ADDRESS |
+			|	ADD AND GND	  |		(HEX)	  |
+			-----------------------------------
+				15kΩ to 39kΩ 		0x9E
+					9.31kΩ 			0x9C
+					6.81kΩ 			0x9A
+					4.75kΩ 			0x98
+					3.01kΩ 			0x3E
+					1.69kΩ 			0x3C
+					750Ω 			0x3A
+				  0 (< 250Ω ) 		0x38
+
+
+ Example:
+	max31730@1c {
+		compatible = "maxim,max31730";
+		reg = <0x1c>;
+		interrupt-parent = <&gpio0>;
+		interrupts = <16 2>;
+	};
