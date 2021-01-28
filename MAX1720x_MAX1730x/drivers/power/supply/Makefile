@@ -1,0 +1,1 @@
+obj-$(CONFIG_BATTERY_MAX1720x)	+= max1720x_battery.o

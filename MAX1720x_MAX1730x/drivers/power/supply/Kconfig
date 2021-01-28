@@ -1,0 +1,7 @@
+config BATTERY_MAX1720x
+	tristate "Maxim MAX1720x Fuel Gauge with Charger"
+	depends on I2C
+	help
+	  Say Y to support for MAX172xx/MAX173xx Driver.
+	  This driver controls Maxim MAX17201/MAX17205/MAX17301/2/3,
+	  MAX17320 and MAX17330 standalone Model Gauge M5.
