@@ -1,0 +1,24 @@
+* Maxim MAX31328 Real Time Clock
+
+Required properties:
+- compatible: Should contain "maxim,max31328".
+- reg: I2C address for chip.
+
+Optional property:
+- #clock-cells: Should be 1.
+
+Each clock is assigned an identifier and client nodes can use this identifier
+to specify the clock which they consume. Following indices are allowed:
+    - 0: square-wave output on the SQW pin
+    - 1: square-wave output on the 32kHz pin
+
+- interrupts: rtc alarm/event interrupt. When this property is selected,
+  clock on the SQW pin cannot be used.
+
+Example:
+
+max31328: max31328@68 {
+	compatible = "maxim,max31328";
+	reg = <0x68>;
+	#clock-cells = <1>;
+};

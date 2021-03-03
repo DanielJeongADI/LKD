@@ -1,0 +1,40 @@
+// Definitions for several I2C based Real Time Clocks
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "brcm,bcm2835";
+
+
+	fragment@0 {
+		target = <&i2cbus>;
+		__dormant__ {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			max31328: max31328@68 {
+				compatible = "maxim,max31328";
+				reg = <0x68>;
+			};
+		};
+	};
+
+	frag100: fragment@100 {
+		target = <&i2c_arm>;
+		i2cbus: __overlay__ {
+			status = "okay";
+		};
+	};
+
+	__overrides__ {
+		max31328 = <0>,"+0";
+
+		i2c0 = <&frag100>, "target:0=",<&i2c0>;
+		i2c_csi_dsi = <&frag100>, "target:0=",<&i2c_csi_dsi>;
+
+		addr = <&max31328>, "reg:0";
+		
+		
+		wakeup-source = <&max31328>,"wakeup-source?";
+	};
+};
