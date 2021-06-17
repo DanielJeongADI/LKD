@@ -1,0 +1,7 @@
+config REGULATOR_MAX77860
+	tristate "Maxim 77860 Regulator"
+	depends on MFD_MAX77860
+	help
+	  This driver controls a Maxim 77860 regulators via I2C bus.
+	  The regulator includes one LDO named 'SAFEOUT' with programmable
+	  voltages if 3.3V, 4.85V, 4.9V and 4.95V through I2C registers.

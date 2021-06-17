@@ -1,0 +1,5 @@
+config CHARGER_MAX77860
+	tristate "Maxim MAX77860 battery charger driver"
+	depends on MFD_MAX77860
+	help
+	  Say Y to enable support for the Maxim MAX77860 battery charger.

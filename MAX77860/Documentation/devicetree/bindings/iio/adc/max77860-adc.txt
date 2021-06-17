@@ -1,0 +1,20 @@
+Device Tree bindings for max77860 adc
+
+Required Properties :
+ - compatible : Should be "maxim,max77860-adc".
+
+Optional Properties :
+ - vbus_hv_range = <0>; /* 2.7V-6.3V LSB = 14mV */
+ - filter_averaging = <0>; /* 2-points avg */
+ - channel_enable = <0xFF>; /* all */
+ - filter_enable = <0>; /* none */
+
+Example:
+		adc {
+			compatible = "maxim,max77860-adc";
+			status = "ok";
+			vbus_hv_range = <0>; /* 2.7V-6.3V LSB = 14mV */
+			filter_averaging = <0>; /* 2-points avg */
+			channel_enable = <0xFF>; /* all */
+			filter_enable = <0>; /* none */
+		};
