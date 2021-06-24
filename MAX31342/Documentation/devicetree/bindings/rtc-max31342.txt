@@ -1,0 +1,18 @@
+Maxim MAX31342 and compatible RTC
+
+Required properties:
+- compatible: should be one of:
+	"maxim,max31342"
+- reg: I2C bus address of the device
+
+Optional properties:
+- interrupts: rtc alarm interrupt.
+- wakeup-source: Enables wake up of host system on alarm
+
+Example:
+	max31342: max31342@69 {
+		compatible = "maxim,max31342";
+		reg = <0x69>;
+		interrupt-parent = <&gpio>;
+		interrupts = <16 8>;
+	};
