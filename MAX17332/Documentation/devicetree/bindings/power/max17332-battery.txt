@@ -1,0 +1,20 @@
+Device Tree bindings for max17332 Battery
+
+Required Properties :
+ - compatible : Should be "maxim,max17332-battery".
+
+Optional Properties :
+	talrt-min		/* DegreeC */
+	talrt-max		/* DegreeC */
+	valrt-min		/* mV */
+	valrt-max		/* mV */
+	salrt-min		/* Percent */
+	salrt-max		/* Percent */
+	ialrt-min		/* mA */
+	ialrt-max		/* mA */
+
+Example:
+
+		battery {
+			compatible = "maxim,max17332-battery";
+		};

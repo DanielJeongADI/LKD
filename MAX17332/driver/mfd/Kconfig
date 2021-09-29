@@ -1,0 +1,8 @@
+config MFD_MAX17332
+	tristate "Maxim Integrated MAX17332 PMIC Support"
+	depends on I2C=y
+	select MFD_CORE
+	select REGMAP_I2C
+	select REGMAP_IRQ
+	help
+	  Say yes here to add support for Maxim Integrated MAX17332. 

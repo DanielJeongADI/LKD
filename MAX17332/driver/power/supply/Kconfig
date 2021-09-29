@@ -1,0 +1,5 @@
+config POWER_MAX17332
+	tristate "Maxim MAX17332 Power Supply driver"
+	depends on MFD_MAX17332
+	help
+	  Say Y to enable support for the Maxim MAX17332 battery charger.
