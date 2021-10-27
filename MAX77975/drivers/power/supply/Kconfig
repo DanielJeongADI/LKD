@@ -1,0 +1,5 @@
+config CHARGER_MAX77975
+	bool "Maxim Integrated MAX77975 Charger driver"
+	depends on I2C=y
+	help
+	  Say Y to enable support for the Maxim MAX77975 charger.

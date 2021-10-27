@@ -1,0 +1,1 @@
+obj-$(CONFIG_CHARGER_MAX77975) 	+= max77975.o

@@ -1,0 +1,36 @@
+Maxim MAX77975 and MAX77985 Charger Driver
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Required properties:
+ - compatible      : should contain one of the following:
+						"maxim,max77975"
+						"maxim,max77985"
+ - reg             : I2C bus address of the device (0x6B)
+
+Optional properties: 
+ - fast_charge_timer : fast charge timer (hr) 
+ - fast_charge_current : fast charge current(mA)
+ - charge_termination_voltage : CV voltage(mV)
+ - topoff_timer : topoff timer (min)
+ - topoff_current : topoff current (mA)
+ - restart_threshold : restart threshold (mV)
+ - input_current_limit : input current limit (mA)
+
+Example:
+
+    max77975: max77975@6B {
+        compatible = "maxim,max77975";
+        reg = <0x6B>;
+        status = "ok";
+        
+        interrupt-parent = <&gpio>;
+        interrupts = <16 0>;
+
+        fast_charge_timer = <0>; /* disable */
+        fast_charge_current = <1500>; /* mA */
+        charge_termination_voltage = <4350>; /* mV */
+        topoff_timer = <30>; /* min */
+        topoff_current = <150>; /* mA */
+        restart_threshold = <150>; /* mV */
+        input_current_limit = <500>; /* mA */
+    };
