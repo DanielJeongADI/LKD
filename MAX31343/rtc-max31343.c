@@ -15,6 +15,7 @@
  *  kernel data transfer
  */
 #include <linux/kernel.h>
+#include <linux/version.h>
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -610,7 +611,11 @@ static int max31343_rtc_read_time(struct device *dev, struct rtc_time *time)
 				time->tm_year + 1900, time->tm_mon + 1,
 				time->tm_mday, time->tm_hour, time->tm_min,
 				time->tm_sec);
-		rtc_time_to_tm(0, time);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 7, 0))
+		rtc_time64_to_tm(0, time);
+#else
+        rtc_time_to_tm(0, time);
+#endif
 	}
 
 	return 0;
