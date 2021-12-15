@@ -1,0 +1,40 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "brcm,bcm2835";
+
+
+	fragment@0 {
+		target = <&spi0>;
+		__overlay__ {
+			status = "okay";
+		};
+	};
+
+	fragment@1 {
+		target = <&spidev0>;
+		__overlay__ {
+			status = "disabled";
+		};
+	};
+
+	fragment@2 {
+		target = <&spi0>;
+		__overlay__{
+
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			max11410:max11410@0{
+				compatible = "maxim,max11410";
+				reg = <0>;
+
+				max11410-gpio1 = <6>;
+
+				status = "okay";
+			};
+		};
+	};
+
+};
