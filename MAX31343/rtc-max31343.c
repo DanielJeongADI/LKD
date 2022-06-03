@@ -15,6 +15,7 @@
  *  kernel data transfer
  */
 #include <linux/kernel.h>
+#include <linux/version.h>
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -67,14 +68,14 @@
 #define MAX31343_MINUTES_REG_MASK		0x7F
 
 #define MAX31343_HOURS_REG_HR_BCD		0x10
-#define MAX31343_HOURS_REG_HOURS		0x0F
+#define MAX31343_HOURS_REG_HOURS		0x1F
 
 #define MAX31343_DAYS_REG_MASK			0x07
 #define MAX31343_DATE_REG_MASK			0x3F
 
 #define MAX31343_MONTH_REG_CENTURY		0x80
 #define MAX31343_MONTH_REG_BCD			0x10
-#define MAX31343_MONTH_REG_MONTH		0x0F
+#define MAX31343_MONTH_REG_MONTH		0x1F
 
 #define MAX31343_PWR_MGMT_REG_PFVT		0x30
 #define MAX31343_PWR_MGMT_REG_D_VBACK_SEL	0x08
@@ -610,7 +611,11 @@ static int max31343_rtc_read_time(struct device *dev, struct rtc_time *time)
 				time->tm_year + 1900, time->tm_mon + 1,
 				time->tm_mday, time->tm_hour, time->tm_min,
 				time->tm_sec);
-		rtc_time_to_tm(0, time);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 7, 0))
+		rtc_time64_to_tm(0, time);
+#else
+        rtc_time_to_tm(0, time);
+#endif
 	}
 
 	return 0;
